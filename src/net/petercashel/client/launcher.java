@@ -105,6 +105,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 public class launcher {
@@ -160,7 +162,7 @@ public class launcher {
 	 */
 	private static void initialize() {
 
-		frame = new JFrame("New Launcher GUI Prototype");
+		frame = new JFrame("PacLauncher");
 		frame.addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent e) {
 				try {
@@ -188,6 +190,23 @@ public class launcher {
 		frame.getContentPane().add(tabbedPane, "cell 0 0,grow");
 		if (enableJFX) {
 			tabbedPane.addTab("News", null, fxPanel, null);
+			fxPanel.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getX() < 9 && e.getY() < 9) {
+						System.out.println("EASTER-EGG!");
+						Platform.runLater(new Runnable() { // this will run initFX as JavaFX-Thread
+							@Override
+							public void run() {
+								if (enableJFX) {
+									webView.getEngine().load("http://www.matmartinez.net/nsfw/");
+								}
+							}
+						});
+						
+					}
+				}
+			});
 			fxPanel.addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
 				@Override
 				public void ancestorResized(HierarchyEvent e) {
@@ -272,7 +291,7 @@ public class launcher {
 			@Override
 			public void run() {
 				if (enableJFX) {
-					initFX(fxPanel, "http://www.google.com.au"); 
+					initFX(fxPanel, "http://blog.petercashel.net/"); 
 				}
 			}
 		});
@@ -607,11 +626,9 @@ public class launcher {
 			File newFile = new File(modDir + entry.getValue());
 			if (!oldFile.exists()) {
 				println("Downloading " + entry.getValue());
-				println("Downloading " + entry.getValue());
 				Util.downloadFile(entry.getKey(), modDir, entry.getValue());
 			} else {
 				try {
-					println("Copying " + entry.getValue());
 					println("Copying " + entry.getValue());
 					FileUtils.copyFile(oldFile, newFile);
 				} catch (IOException e) {
@@ -630,11 +647,9 @@ public class launcher {
 			File newFile = new File(modDir + entry.getValue());
 			if (!oldFile.exists()) {
 				println("Downloading " + entry.getValue());
-				println("Downloading " + entry.getValue());
 				Util.downloadFile(entry.getKey(), modDir, entry.getValue());
 			} else {
 				try {
-					println("Copying " + entry.getValue());
 					println("Copying " + entry.getValue());
 					FileUtils.copyFile(oldFile, newFile);
 				} catch (IOException e) {
@@ -647,7 +662,6 @@ public class launcher {
 		}
 
 		// Download config
-		println("Downloading mod configs");
 		println("Downloading mod configs");
 		fileInProgress = "config.zip";
 
