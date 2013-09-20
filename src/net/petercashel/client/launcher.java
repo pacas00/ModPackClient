@@ -203,7 +203,7 @@ public class launcher {
 								}
 							}
 						});
-						
+
 					}
 				}
 			});
@@ -211,8 +211,12 @@ public class launcher {
 				@Override
 				public void ancestorResized(HierarchyEvent e) {
 					if (enableJFX) {
+						try {
 						webView.setMinSize(fxPanel.getWidth(), fxPanel.getHeight());
 						webView.setMaxSize(fxPanel.getWidth(), fxPanel.getHeight());
+						} catch (NullPointerException nu) {
+							
+						}
 					}
 
 				}
@@ -258,7 +262,7 @@ public class launcher {
 					new settingsOpenMsg(frame).setVisible(true);
 				} else {
 					if (enableModUpdate) {
-						
+
 						Platform.runLater(new Runnable() {
 							@Override
 							public void run() {
@@ -442,6 +446,7 @@ public class launcher {
 			} else {
 				println("No Updates");
 				statusBarHandler.setStatusBarText("No Updates");
+				doneUpdate = true;
 			}	
 
 		} else if (publicPack) {
@@ -459,6 +464,7 @@ public class launcher {
 			} else {
 				println("No Updates");
 				statusBarHandler.setStatusBarText("No Updates");
+				doneUpdate = true;
 			}			
 		} else {
 			// Check what happened and error appropriately
@@ -473,19 +479,19 @@ public class launcher {
 		println("Checking for modpack updates");
 		Boolean modpackNeedsUpdate = false;
 		// Download basemods + correct mc jar
-		if (new File(workDir + "version.json").exists()) {
+		if (new File(workDir.toString() + File.separator + "version.json").exists()) {
 
 			@SuppressWarnings("unused")
 			String versionJSONFile;
 			FileInputStream inputStream;
 			try {
-				inputStream = new FileInputStream(workDir + "version.json");
+				inputStream = new FileInputStream(workDir.toString() + File.separator  + "version.json");
 				versionJSONFile = IOUtils.toString(inputStream);
 				inputStream.close();
 				JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON( versionJSONFile );
 
-				packVersion = Integer.parseInt(jsonObject.getString("modpack_version"));
-				forgeVersion = jsonObject.getString("forge_version");
+				packVersion = Integer.parseInt(jsonObject.getString("modpack_version").toString().replace("\"", "").replace("\\", ""));
+				forgeVersion = jsonObject.getString("forge_version").toString().replace("\"", "").replace("\\", "");
 
 
 			} catch (FileNotFoundException e1) {
@@ -507,24 +513,19 @@ public class launcher {
 			com.google.gson.JsonObject gsonObj = dbClient.find(JsonObject.class, "modpackVersion");
 
 			String response = gsonObj.toString();
-			System.out.println(response);
 			dbClient.shutdown();
 
-
-			JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON( response ); 
-
-
-			if (Integer.parseInt((jsonObject.get("modpack_version")).toString()) > packVersion) {
+			if (Integer.parseInt((gsonObj.get("modpack_version")).toString().replace("\"", "").replace("\\", "")) > packVersion) {
 				modpackNeedsUpdate = true;
-				packVersion = Integer.parseInt((jsonObject.get("modpack_version")).toString());
+				packVersion = Integer.parseInt((gsonObj.get("modpack_version")).toString().replace("\"", "").replace("\\", ""));
 			}
 			try {
-				if (jsonObject.get("forge_version").toString().contains(forgeVersion)) {
+				if (gsonObj.get("forge_version").toString().replace("\"", "").replace("\\", "").contains(forgeVersion)) {
 					// YAY!
 				} else {
 					// Awe...
 					modpackNeedsUpdate = true;
-					forgeVersion = jsonObject.get("forge_version").toString();
+					forgeVersion = gsonObj.get("forge_version").toString().replace("\"", "").replace("\\", "");
 				}
 			} catch (NullPointerException e) {
 				modpackNeedsUpdate = true;
@@ -532,6 +533,18 @@ public class launcher {
 
 		} else {
 			modpackNeedsUpdate = true;
+			
+			System.out.println((new File(workDir.toString() + File.separator + "version.json").toString()));
+			CouchDbClient dbClient = new CouchDbClient(packListContoller.packDB.toString().replace("\"", "").replace("\\", ""), false, 
+					Configuration.getString("apiServerProtocol").toLowerCase(), Configuration.getString("apiServer"),
+					Integer.parseInt(Configuration.getString("apiServerPort")), null, null);
+
+			com.google.gson.JsonObject gsonObj = dbClient.find(JsonObject.class, "modpackVersion");
+
+			String response = gsonObj.toString();
+			dbClient.shutdown();
+			packVersion = Integer.parseInt((gsonObj.get("modpack_version")).toString().replace("\"", "").replace("\\", ""));
+			forgeVersion = gsonObj.get("forge_version").toString().replace("\"", "").replace("\\", "");
 		}
 		return modpackNeedsUpdate;
 	}
@@ -734,6 +747,9 @@ public class launcher {
 
 		JSONObject versionjsonObject = (JSONObject) JSONSerializer.toJSON( versionJSON ); 
 		String versionjsonString = versionjsonObject.toString();
+		System.out.println(versionjsonString);
+		System.out.println(packVersion);
+		System.out.println(forgeVersion);
 
 
 		try {
