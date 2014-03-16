@@ -20,104 +20,104 @@
 		<mkdir dir="externalLibs" />
 		
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="miglayout15-swing.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="forms-1.3.0.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="fluent-hc-4.2.5.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-lang3-3.1.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-beanutils.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="ezmorph-1.0.3.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="httpmime-4.2.5.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="httpcore-4.2.4.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-logging-1.1.1.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-lang.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-collections.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="gson-2.2.4.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-codec-1.6.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="json-lib-2.2.3-MODIFIED-jdk15.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="httpclient-cache-4.2.5.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="httpclient-4.2.5.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-cli-1.2.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="commons-io-2.4.jar"/>	
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}\lib">
+			<fileset dir="${basedir}\..\lib">
 				<filename name="LightCouch.jar"/>	
 			</fileset>
 		</copy>
 		
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="${basedir}">
+			<fileset dir="${basedir}\..\">
 				<include name="src/**" />
 			</fileset>
 		</copy>
@@ -170,7 +170,7 @@
 					<include name="*"/>
 				</fileset>
 				<filelist>
-					<file name="C:\Program Files\Java\jdk1.7.0_45\jre\lib\jfxrt.jar"/>
+					<file name="${java.home}\lib\jfxrt.jar"/>
 				</filelist>
 			</classpath>
 		</javac>
