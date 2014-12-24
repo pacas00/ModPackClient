@@ -36,5 +36,4 @@ build/*
 *.log
 dist/
 out/
-
-build/build.xml
+.idea/
