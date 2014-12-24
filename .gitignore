@@ -31,13 +31,10 @@ local.properties
 
 
 
-build/build/
-build/classes/
-build/deploy/
-build/dist/
-build/externalLibs/
-build/generated-sources/
-build/project/
+build/
+build/*
 *.log
 dist/
+out/
 
+build/build.xml
