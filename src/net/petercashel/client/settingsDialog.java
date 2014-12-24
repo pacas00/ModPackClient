@@ -1,233 +1,112 @@
 package net.petercashel.client;
-import java.awt.Frame;
 
-import javafx.application.Platform;
-
-import javax.swing.JDialog;
-import javax.swing.JDesktopPane;
-
-import java.awt.BorderLayout;
-import java.awt.SystemColor;
-
-import javax.swing.JLabel;
-
-import java.awt.Font;
-
-import javax.swing.SwingConstants;
-
-import java.awt.Component;
-
-import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JSeparator;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-
-import javax.swing.JButton;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 
 public class settingsDialog extends JDialog {
-	public static JTextField serverURLField;
-	public static JTextField serverPortField;
-	public static JTextField userNameField;
-	public static JTextField userCodeField;
-	public static JComboBox comboBox;
+    public static JTextField ServerVersionURL;
+    public static JTextField InstallDirPath;
+    public static JFileChooser chooser;
 
 
-	public settingsDialog(Frame parent) {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				launcher.settingsOpen = false;
-				packListContoller.saveSelectedPack();
-			}
-		});
-		setTitle("Settings");
-		this.setAutoRequestFocus(true);
+    public settingsDialog(Frame parent) {
 
-		JDesktopPane desktopPane = new JDesktopPane();
-		desktopPane.setBackground(SystemColor.control);
-		getContentPane().add(desktopPane, BorderLayout.CENTER);
+        chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Select Installation Directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
 
-		JLabel lblModPackSettings = new JLabel("Mod Pack Settings");
-		lblModPackSettings.setFont(new Font("Monospaced", Font.BOLD, 14));
-		lblModPackSettings.setBounds(55, 11, 172, 20);
-		desktopPane.add(lblModPackSettings);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                launcher.settingsOpen = false;
+            }
+        });
+        setTitle("Settings");
+        this.setAutoRequestFocus(true);
 
-		Component horizontalStrut = Box.createHorizontalStrut(20);
-		horizontalStrut.setBounds(10, 55, 644, -11);
-		desktopPane.add(horizontalStrut);
+        JDesktopPane desktopPane = new JDesktopPane();
+        desktopPane.setBackground(SystemColor.control);
+        getContentPane().add(desktopPane, BorderLayout.CENTER);
 
-		JLabel lblSelectModPack = new JLabel("Select Mod Pack");
-		lblSelectModPack.setBounds(55, 116, 142, 14);
-		desktopPane.add(lblSelectModPack);
+        JLabel lblSettings = new JLabel("Launcher Settings");
+        lblSettings.setFont(new Font("Monospaced", Font.BOLD, 14));
+        lblSettings.setBounds(40, 11, 206, 20);
+        desktopPane.add(lblSettings);
 
-		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
-	    comboBox = new JComboBox<String>(model);
-		comboBox.setBounds(232, 113, 308, 20);
-		comboBox.setRenderer(new ComboRenderer());
-		desktopPane.add(comboBox);
+        JLabel ServerVersionURLName = new JLabel("Server Version URL");
+        ServerVersionURLName.setBounds(40, 60, 160, 14);
+        desktopPane.add(ServerVersionURLName);
 
-		serverURLField = new JTextField();
-		serverURLField.setBounds(232, 51, 308, 20);
-		desktopPane.add(serverURLField);
-		serverURLField.setColumns(10);
+        ServerVersionURL = new JTextField();
+        ServerVersionURL.setBounds(170, 60, 370, 20);
+        desktopPane.add(ServerVersionURL);
+        ServerVersionURL.setColumns(10);
 
-		JLabel lblNewLabel = new JLabel("Update Server Address");
-		lblNewLabel.setBounds(55, 51, 142, 14);
-		desktopPane.add(lblNewLabel);
+        InstallDirPath = new JTextField();
+        InstallDirPath.setBounds(170, 95, 370, 20);
+        desktopPane.add(InstallDirPath);
+        InstallDirPath.setColumns(10);
 
-		JSeparator separator = new JSeparator();
-		separator.setBounds(0, 141, 584, 2);
-		desktopPane.add(separator);
+        JLabel InstallDirName = new JLabel("Installation Directory");
+        InstallDirName.setBounds(40, 95, 160, 14);
+        desktopPane.add(InstallDirName);
 
-		JLabel lblPackSpecificSettings = new JLabel("Pack Specific Settings");
-		lblPackSpecificSettings.setFont(new Font("Monospaced", Font.BOLD, 14));
-		lblPackSpecificSettings.setBounds(55, 154, 206, 20);
-		desktopPane.add(lblPackSpecificSettings);
+        JButton btnSave = new JButton("Save");
+        btnSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
 
-		JLabel lblMcUserName = new JLabel("MC User Name");
-		lblMcUserName.setBounds(55, 200, 100, 14);
-		desktopPane.add(lblMcUserName);
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Configuration.setString("ServerVersionJSON", ServerVersionURL.getText());
+                        Configuration.setString("InstallDir", InstallDirPath.getText());
+                        launcher.settingsOpen = false;
+                        dispose();
+                    }
+                }.run();
+            }
+        });
+        btnSave.setBounds(398, 126, 142, 23);
+        desktopPane.add(btnSave);
+        setSize(600, 200);
+        setLocationRelativeTo(parent);
 
-		userNameField = new JTextField();
-		userNameField.setBounds(232, 197, 308, 20);
-		desktopPane.add(userNameField);
-		userNameField.setColumns(10);
+        final JButton btnBrowse = new JButton("Browse");
+        btnBrowse.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        int result = chooser.showOpenDialog(null);
+                        switch (result) {
+                            case JFileChooser.APPROVE_OPTION:
+                                String s = null;
+                                try {
+                                    s = chooser.getSelectedFile().getCanonicalPath();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                InstallDirPath.setText(s);
+                                break;
+                        }
+                    }
+                }.run(
+                );
+            }
+        });
+        btnBrowse.setBounds(170, 126, 156, 23);
+        desktopPane.add(btnBrowse);
 
-		userCodeField = new JTextField();
-		userCodeField.setBounds(232, 228, 308, 20);
-		desktopPane.add(userCodeField);
-		userCodeField.setColumns(10);
+        ServerVersionURL.setText(Configuration.getString("ServerVersionJSON"));
+        InstallDirPath.setText(Configuration.getString("InstallDir"));
 
-		JLabel lblUniqueCode = new JLabel("Unique Code");
-		lblUniqueCode.setBounds(55, 231, 100, 14);
-		desktopPane.add(lblUniqueCode);
-
-		JButton btnRefresh = new JButton("Save");
-		btnRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				new Thread() {
-					@Override
-					public void run() {
-						if (serverURLField.getText().substring(0, 7).toLowerCase().contains("http://")) {
-							//we are http
-							System.out.println(serverURLField.getText().substring(0, 7).toLowerCase());
-							Configuration.setString("apiServerProtocol", serverURLField.getText().substring(0, 4).toLowerCase());
-							Configuration.setString("apiServer", serverURLField.getText().substring(7));
-							Configuration.setString("apiServerPort", serverPortField.getText());
-							statusBarHandler.setStatusBarText("Settings Saved!");
-
-						} else if (serverURLField.getText().substring(0, 8).toLowerCase().contains("https://")) {
-							//we are https
-							System.out.println(serverURLField.getText().substring(0, 8).toLowerCase());
-							Configuration.setString("apiServerProtocol", serverURLField.getText().substring(0, 5).toLowerCase());
-							Configuration.setString("apiServer", serverURLField.getText().substring(8));
-							Configuration.setString("apiServerPort", serverPortField.getText());
-							statusBarHandler.setStatusBarText("Settings Saved!");
-						} else {
-							// Invalid Address
-							// Tell Them. Tell Them Now.
-							statusBarHandler.setStatusBarText("Invalid Server Address");
-
-						}
-
-						packListContoller.saveSelectedPack();
-						Configuration.setString("authUser",userNameField.getText());
-						Configuration.setString("authCode",userCodeField.getText());
-						packListContoller.getPackData();
-						launcher.settingsOpen = false;
-						dispose();
-					}
-				}.run();			}
-		});
-		btnRefresh.setBounds(398, 277, 142, 23);
-		desktopPane.add(btnRefresh);
-
-		JLabel lblUpdateServerPort = new JLabel("Update Server Port");
-		lblUpdateServerPort.setToolTipText("if the start of the address has a colon in it, put the numbers after the colon in this box. Then remove the colon and numbers from the Server Address");
-		lblUpdateServerPort.setBounds(55, 85, 142, 14);
-		desktopPane.add(lblUpdateServerPort);
-
-		serverPortField = new JTextField();
-		serverPortField.setColumns(10);
-		serverPortField.setBounds(232, 82, 308, 20);
-		desktopPane.add(serverPortField);
-		setSize(600, 350);
-		setLocationRelativeTo(parent);
-		
-		serverPortField.setText(Configuration.getString("apiServerPort"));
-		serverURLField.setText(Configuration.getString("apiServerProtocol") + "://" + Configuration.getString("apiServer"));
-		
-		
-		userNameField.setText(Configuration.getString("authUser"));
-		userCodeField.setText(Configuration.getString("authCode"));
-		
-		JButton btnReloadPacks = new JButton("Reload Packs");
-		btnReloadPacks.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new Thread() {
-					@Override
-					public void run() {
-						
-						if (serverURLField.getText().substring(0, 7).toLowerCase().contains("http://")) {
-							//we are http
-							System.out.println(serverURLField.getText().substring(0, 7).toLowerCase());
-							Configuration.setString("apiServerProtocol", serverURLField.getText().substring(0, 4).toLowerCase());
-							Configuration.setString("apiServer", serverURLField.getText().substring(7));
-							Configuration.setString("apiServerPort", serverPortField.getText());
-							packListContoller.getpackList();
-
-						} else if (serverURLField.getText().substring(0, 8).toLowerCase().contains("https://")) {
-							//we are https
-							System.out.println(serverURLField.getText().substring(0, 8).toLowerCase());
-							Configuration.setString("apiServerProtocol", serverURLField.getText().substring(0, 5).toLowerCase());
-							Configuration.setString("apiServer", serverURLField.getText().substring(8));
-							Configuration.setString("apiServerPort", serverPortField.getText());
-							packListContoller.getpackList();
-						} else {
-							// Invalid Address
-							// Tell Them. Tell Them Now.
-							statusBarHandler.setStatusBarText("Invalid Server Address");
-
-						}
-
-						Configuration.setString("authUser",userNameField.getText());
-						Configuration.setString("authCode",userCodeField.getText());
-					}
-				}.run();
-			}
-		});
-		btnReloadPacks.setBounds(232, 277, 156, 23);
-		desktopPane.add(btnReloadPacks);
-		
-		
-		Thread getPacks = new Thread() {
-			@Override
-			public void run() {
-				try {
-					if (!Configuration.getString("apiServer").isEmpty()) {
-						packListContoller.getpackList();
-					}	
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		getPacks.run();
-		if (!Configuration.getString("packName").isEmpty()) {
-			comboBox.setSelectedItem(Configuration.getString("packName"));
-		}
-		
-	}
+    }
 }

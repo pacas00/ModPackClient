@@ -1,32 +1,9 @@
 package net.petercashel.client;
-import java.awt.EventQueue;
 
-import javax.swing.JFrame;
-
-import net.miginfocom.swing.MigLayout;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
-import javax.swing.JTabbedPane;
-import javax.swing.JPanel;
-
-import java.awt.GridBagLayout;
-
-import javax.swing.JButton;
-
-import java.awt.Canvas;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
-
-import javafx.embed.swing.JFXPanel;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,766 +13,613 @@ import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.text.DefaultCaret;
-
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyBoundsAdapter;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import javax.swing.SwingConstants;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JSeparator;
-
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-
-import java.awt.FlowLayout;
-
-import com.google.gson.JsonObject;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.RowSpec;
-
-import javax.swing.BoxLayout;
-import javax.swing.UIManager;
-
-import java.awt.SystemColor;
-
-import javax.swing.JFormattedTextField;
-
-import java.awt.Panel;
-import java.awt.Label;
-
-import javax.swing.JTextField;
-
+import net.miginfocom.swing.MigLayout;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.lightcouch.CouchDbClient;
-import org.lightcouch.Document;
 
-import java.awt.event.WindowFocusListener;
-import java.awt.event.WindowEvent;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
+import javax.swing.*;
+import javax.swing.text.DefaultCaret;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
 import java.util.Map;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 
 public class launcher {
 
-	private static JFrame frame;
-	private static JScrollPane Log;
-	private static final Font MONOSPACED = new Font("Monospaced", 0, 13);
-	private static WebView webView;
-	final static JFXPanel fxPanel = new JFXPanel();
-	Thread UpdateThread;
-	static JTextPane editorPane;
-	public static JTextField statusField;
-	public static boolean settingsOpen = false;
-	private static JDialog settingsDialogHandle;
-	public static int packVersion;
-	public static String forgeVersion;
-	public static boolean doneUpdate = false;
-
-
-	//Development bools. Release with all true
-	private static final boolean enableJFX = true;
-	private static boolean enableModUpdate = true;
-
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-
-		//Configuration Prep
-		Configuration.initProp();
-
-		//FIRE THE MAIN CANNONS!
-		//
-		//Err.. i mean initalize()
-
-		new File(OS_Util.getWorkingDirectory().getAbsolutePath() + File.separator + "tmp").mkdirs();
-
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				initialize();
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private static void initialize() {
-
-		frame = new JFrame("PacLauncher");
-		frame.addWindowFocusListener(new WindowFocusListener() {
-			public void windowGainedFocus(WindowEvent e) {
-				try {
-					if (settingsOpen) {
-						settingsDialogHandle.toFront();
-					}
-
-				} catch (NullPointerException noWindow) {
-
-				}
-			}
-			public void windowLostFocus(WindowEvent e) {
-			}
-		});
-		frame.getContentPane().setBackground(UIManager.getColor("window"));
-		frame.setBounds(100, 100, 1280, 720);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new MigLayout("", "[grow]", "[400.00,grow,top][25px:25px:25px,grow,bottom]"));
-		frame.setVisible(true);
-
-
-
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBorder(null);
-		frame.getContentPane().add(tabbedPane, "cell 0 0,grow");
-		if (enableJFX) {
-			tabbedPane.addTab("News", null, fxPanel, null);
-			fxPanel.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (e.getX() < 9 && e.getY() < 9) {
-						System.out.println("EASTER-EGG!");
-						Platform.runLater(new Runnable() { // this will run initFX as JavaFX-Thread
-							@Override
-							public void run() {
-								if (enableJFX) {
-									webView.getEngine().load("http://www.matmartinez.net/nsfw/");
-								}
-							}
-						});
-
-					}
-				}
-			});
-			fxPanel.addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
-				@Override
-				public void ancestorResized(HierarchyEvent e) {
-					if (enableJFX) {
-						try {
-						webView.setMinSize(fxPanel.getWidth(), fxPanel.getHeight());
-						webView.setMaxSize(fxPanel.getWidth(), fxPanel.getHeight());
-						} catch (NullPointerException nu) {
-							
-						}
-					}
-
-				}
-			});
-		}
-		editorPane = new JTextPane() {
-			private static final long serialVersionUID = 1L;
-		};
-		editorPane.setBackground(Color.DARK_GRAY);
-		editorPane.setBackground( new Color(70, 130, 180, 255) );
-		editorPane.setForeground( new Color(0, 0, 0, 255) );
-		editorPane.setEditable(false);
-		editorPane.setFont(MONOSPACED);
-
-		DefaultCaret caret = (DefaultCaret)editorPane.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-		Log = new JScrollPane();
-		tabbedPane.addTab("Update Status", null, Log, null);
-
-		Log.setViewportView(editorPane);
-
-		JPanel panel = new JPanel();
-		panel.setBorder(null);
-		frame.getContentPane().add(panel, "flowx,cell 0 1,grow");
-		panel.setLayout(new BorderLayout(0, 0));
-
-		JButton btnSettings = new JButton("Settings");
-		panel.add(btnSettings, BorderLayout.WEST);
-
-		JButton btnLaunch = new JButton("Launch");
-		panel.add(btnLaunch, BorderLayout.EAST);
-
-		statusField = new JTextField();
-		panel.add(statusField, BorderLayout.CENTER);
-		statusField.setBackground(UIManager.getColor("scrollbar"));
-		statusField.setEditable(false);
-		statusField.setColumns(120);
-		btnLaunch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				println("Launch Pressed");
-				if (settingsOpen) {
-					new settingsOpenMsg(frame).setVisible(true);
-				} else {
-					if (enableModUpdate) {
-
-						Platform.runLater(new Runnable() {
-							@Override
-							public void run() {
-								packListContoller.getpackListLaunch();
-								packListContoller.getPackData();
-								updateCore();
-
-								if (doneUpdate) {
-									launchBootstrap(new File(OS_Util.getWorkingDirectory().getAbsolutePath() + File.separator + "." + Configuration.getString("packName")));
-								}
-							}
-						});
-					}
-
-				}
-			}
-		});
-		btnSettings.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!settingsOpen) {
-					settingsDialogHandle = new settingsDialog(frame);
-					settingsDialogHandle.setVisible(true);
-					settingsOpen = true;
-					println("Settings Opened");
-				}
-			}
-		});
-
-		Platform.runLater(new Runnable() { // this will run initFX as JavaFX-Thread
-			@Override
-			public void run() {
-				if (enableJFX) {
-					initFX(fxPanel, "http://blog.petercashel.net/"); 
-				}
-			}
-		});
-
-		println("Hi There");
-		println("No!");
-		println(" ");
-		println("Scroll Pane Online");
-
-
-
-
-
-	}
-
-	/* Creates a WebView and fires up google.com */
-	private static void initFX(final JFXPanel fxPanel, String URL) {
-		if (enableJFX) {
-			Group group = new Group();
-			Scene scene = new Scene(group);
-			fxPanel.setScene(scene);
-
-			webView = new WebView();
-			group.getChildren().add(webView);
-			webView.autosize();
-			webView.setMinSize(fxPanel.getWidth(), fxPanel.getHeight());
-			webView.setMaxSize(fxPanel.getWidth(), fxPanel.getHeight());
-			final WebEngine webEngine = webView.getEngine();
-
-			webEngine.locationProperty().addListener(new ChangeListener<String>() {
-				@Override public void changed(ObservableValue<? extends String> observableValue, String oldLoc, String newLoc) {
-					// check if the newLoc corresponds to a file you want to be downloadable
-					// and if so trigger some code and dialogs to handle the download.
-
-					//engine.spotscenered.info
-
-					if (!newLoc.contains("adf.ly/go.php") && !newLoc.contains("/http://") && !newLoc.contains("/https://") && !newLoc.contains("www.mediafire.com/download/")&& !newLoc.contains("engine.spotscenered.info")) {
-						System.out.println(newLoc);
-
-						String downloadableExtension = null;  // todo I wonder how to find out from WebView which documents it could not process so that I could trigger a save as for them?
-						String[] downloadableExtensions = { ".doc", ".docx", ".xls", ".xlsx", ".zip", ".tgz", ".tar", ".gz", ".tar.gz", ".lzma", ".jar", ".rar", ".7z", ".pdf" };
-						for (String ext: downloadableExtensions) {
-							if (newLoc.endsWith(ext)) {
-								downloadableExtension = ext;
-								break;
-							}
-						}
-						if (downloadableExtension != null) {  
-							// create a file save option for performing a download.
-							FileChooser chooser = new FileChooser();
-							chooser.setTitle("Save " + newLoc);
-							chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Downloadable File", downloadableExtension));
-							chooser.setInitialFileName(newLoc.substring(newLoc.lastIndexOf("/") + 1, newLoc.length()));
-							chooser.setInitialDirectory(new File(OS_Util.getWorkingDirectory().getAbsolutePath() + File.separator + "tmp"));
-							int filenameIdx = newLoc.lastIndexOf("/") + 1;
-							if (filenameIdx != 0) {
-								File saveFile = chooser.showSaveDialog(webView.getScene().getWindow());
-
-								if (saveFile != null) {
-									statusBarHandler.setStatusBarText("Downloading " + saveFile.toString());
-									BufferedInputStream  is = null;
-									BufferedOutputStream os = null;
-									try {
-										is = new BufferedInputStream(new URL(newLoc).openStream());
-										os = new BufferedOutputStream(new FileOutputStream(saveFile));
-										int b = is.read();
-										while (b != -1) {
-											os.write(b);
-											b = is.read();
-										}
-									} catch (FileNotFoundException e) {
-										System.out.println("Unable to save file: " + e);
-									} catch (MalformedURLException e) {
-										System.out.println("Unable to save file: " + e);
-									} catch (IOException e) {
-										System.out.println("Unable to save file: " + e);
-									} finally {
-										try { if (is != null) is.close(); } catch (IOException e) { /** no action required. */ }
-										try { if (os != null) os.close(); } catch (IOException e) { /** no action required. */ }
-										statusBarHandler.setStatusBarText("Download Complete! " + saveFile.toString());
-									}
-								}
-							}
-						}
-					} 
-				}
-			});
-			webEngine.load(URL); 
-			webEngine.setJavaScriptEnabled(true);
-		}
-	}
-
-	public static void println(String string) {
-		String s = editorPane.getText();
-
-		editorPane.setText(s  + string + "\n");
-		editorPane.setFont(MONOSPACED);
-	}
-
-	// Functions below here are for mod update threads
-
-	private static void updateCore() {
-		boolean publicPack = packListContoller.packPublic;
-		boolean validUser = false;
-		boolean newUpdate = false;
-
-		File workDir = new File(OS_Util.getWorkingDirectory().getAbsolutePath() + File.separator + "." + Configuration.getString("packName"));
-		workDir.mkdirs();
-
-		CouchDbClient dbClient = new CouchDbClient(packListContoller.packDB.toString().replace("\"", "").replace("\\", ""), false, 
-				Configuration.getString("apiServerProtocol").toLowerCase(), Configuration.getString("apiServer"),
-				Integer.parseInt(Configuration.getString("apiServerPort")), null, null);
-
-		if (!publicPack) {
-
-			com.google.gson.JsonObject gsonObj = dbClient.find(JsonObject.class, "userAuth");
-			String response = gsonObj.toString();
-			System.out.println(response);
-			dbClient.shutdown();
-			JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON( response ); 
-			System.out.println(jsonObject.get("pacas00"));
-			if(jsonObject.containsKey(Configuration.getString("authUser").toLowerCase())) 
-			{
-				if (Configuration.getString("authCode").toLowerCase().contentEquals(jsonObject.get(Configuration.getString("authUser")).toString().toLowerCase())) {
-					validUser = true;
-				}
-			} else {
-				validUser = false;
-			}
-
-		}
-		// From here,
-		// run the updater always for publicPack = true
-		// run the updater for publicPack = false only if validUser = true
-
-		if (!publicPack && validUser) {
-			//Run the UpdateCore Thread
-
-			println("Checking for Mod Updates");
-			statusBarHandler.setStatusBarText("Checking for Mod Updates");
-			newUpdate = doUpdateCheck(workDir);
-
-			if (newUpdate) {
-				println("Installing Mod Updates");
-				statusBarHandler.setStatusBarText("Installing Mod Updates");
-				//Call update Thread
-				doUpdate(workDir);
-			} else {
-				println("No Updates");
-				statusBarHandler.setStatusBarText("No Updates");
-				doneUpdate = true;
-			}	
-
-		} else if (publicPack) {
-			//Run the UpdateCore Thread
-
-			println("Checking for Mod Updates");
-			statusBarHandler.setStatusBarText("Checking for Mod Updates");
-			newUpdate = doUpdateCheck(workDir);
-
-			if (newUpdate) {
-				println("Installing Mod Updates");
-				statusBarHandler.setStatusBarText("Installing Mod Updates");
-				//Call update Thread
-				doUpdate(workDir);
-			} else {
-				println("No Updates");
-				statusBarHandler.setStatusBarText("No Updates");
-				doneUpdate = true;
-			}			
-		} else {
-			// Check what happened and error appropriately
-
-			doneUpdate = true;
-		}
-
-	}
-
-	private static boolean doUpdateCheck(File workDir) {
-
-		println("Checking for modpack updates");
-		Boolean modpackNeedsUpdate = false;
-		// Download basemods + correct mc jar
-		if (new File(workDir.toString() + File.separator + "version.json").exists()) {
-
-			@SuppressWarnings("unused")
-			String versionJSONFile;
-			FileInputStream inputStream;
-			try {
-				inputStream = new FileInputStream(workDir.toString() + File.separator  + "version.json");
-				versionJSONFile = IOUtils.toString(inputStream);
-				inputStream.close();
-				JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON( versionJSONFile );
-
-				packVersion = Integer.parseInt(jsonObject.getString("modpack_version").toString().replace("\"", "").replace("\\", ""));
-				forgeVersion = jsonObject.getString("forge_version").toString().replace("\"", "").replace("\\", "");
-
-
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-				modpackNeedsUpdate = true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				modpackNeedsUpdate = true;
-			} catch (Exception e) {
-				e.printStackTrace();
-				modpackNeedsUpdate = true;
-			}
-
-
-			CouchDbClient dbClient = new CouchDbClient(packListContoller.packDB.toString().replace("\"", "").replace("\\", ""), false, 
-					Configuration.getString("apiServerProtocol").toLowerCase(), Configuration.getString("apiServer"),
-					Integer.parseInt(Configuration.getString("apiServerPort")), null, null);
-
-			com.google.gson.JsonObject gsonObj = dbClient.find(JsonObject.class, "modpackVersion");
-
-			String response = gsonObj.toString();
-			dbClient.shutdown();
-
-			if (Integer.parseInt((gsonObj.get("modpack_version")).toString().replace("\"", "").replace("\\", "")) > packVersion) {
-				modpackNeedsUpdate = true;
-				packVersion = Integer.parseInt((gsonObj.get("modpack_version")).toString().replace("\"", "").replace("\\", ""));
-			}
-			try {
-				if (gsonObj.get("forge_version").toString().replace("\"", "").replace("\\", "").contains(forgeVersion)) {
-					// YAY!
-				} else {
-					// Awe...
-					modpackNeedsUpdate = true;
-					forgeVersion = gsonObj.get("forge_version").toString().replace("\"", "").replace("\\", "");
-				}
-			} catch (NullPointerException e) {
-				modpackNeedsUpdate = true;
-			}
-
-		} else {
-			modpackNeedsUpdate = true;
-			
-			System.out.println((new File(workDir.toString() + File.separator + "version.json").toString()));
-			CouchDbClient dbClient = new CouchDbClient(packListContoller.packDB.toString().replace("\"", "").replace("\\", ""), false, 
-					Configuration.getString("apiServerProtocol").toLowerCase(), Configuration.getString("apiServer"),
-					Integer.parseInt(Configuration.getString("apiServerPort")), null, null);
-
-			com.google.gson.JsonObject gsonObj = dbClient.find(JsonObject.class, "modpackVersion");
-
-			String response = gsonObj.toString();
-			dbClient.shutdown();
-			packVersion = Integer.parseInt((gsonObj.get("modpack_version")).toString().replace("\"", "").replace("\\", ""));
-			forgeVersion = gsonObj.get("forge_version").toString().replace("\"", "").replace("\\", "");
-		}
-		return modpackNeedsUpdate;
-	}
-
-	private static void doUpdate(File workDir) {
-
-		String configDir = workDir.toString() + File.separator + "config" + File.separator;
-		String modDir = workDir.toString() + File.separator + "mods" + File.separator;
-		String modDirOld = workDir.toString() + File.separator + "mods_Old" + File.separator;
-		String assetsDir = workDir.toString() + File.separator + "assets" + File.separator;
-		String tmpDir = workDir.toString() + File.separator + "temp" + File.separator;
-		String fileInProgress = "";
-
-		println("********************");
-		println("********************");
-		println("********************");
-		println("Mod Updater Starting");
-		println("********************");
-		println("********************");
-		println("********************");
-
-		// Make sure Directories exist
-		File dir = new File(configDir);
-
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-		//Added old mods folder
-
-		dir = new File(modDirOld);
-		FileUtils.deleteQuietly(dir);
-
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-
-		try {
-			FileUtils.copyDirectory(new File(modDir), new File(modDirOld));
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}		
-
-		dir = new File(modDir);
-		FileUtils.deleteQuietly(dir);
-
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-		dir = new File(assetsDir);
-
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-		dir = new File(tmpDir);
-
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-
-		println("Installing Forge");
-
-		println("Please select 'Install Client' when the 'Minecraft Forge Installer' opens");
-		println("Please DO NOT change the path.");
-
-		//Also Downloads!
-		Util.installForge(workDir);
-
-		println("Downloading Mods");
-
-		CouchDbClient dbClient = new CouchDbClient(packListContoller.packDB.toString().replace("\"", "").replace("\\", ""), false, 
-				Configuration.getString("apiServerProtocol").toLowerCase(), Configuration.getString("apiServer"),
-				Integer.parseInt(Configuration.getString("apiServerPort")), null, null);
-
-		com.google.gson.JsonObject gsonObj = dbClient.find(JsonObject.class, "modList");
-
-		String response = gsonObj.toString();
-		System.out.println(response);
-		dbClient.shutdown();
-
-		JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON( response ); 
-
-		JSONObject CommonjsonObject = ( jsonObject.getJSONObject("modList_Common") ); 
-		Map<String, String> modListCommon = (Map<String, String>) JSONObject.toBean(CommonjsonObject, Map.class);
-
-		JSONObject ClientjsonObject = ( jsonObject.getJSONObject("modList_Client") ); 
-		Map<String, String> modListClient = (Map<String, String>) JSONObject.toBean(ClientjsonObject, Map.class);
-
-		for (Map.Entry<String, String> entry : modListCommon.entrySet()) {
-			fileInProgress = entry.getValue();
-			File oldFile = new File(modDirOld + entry.getValue());
-			File newFile = new File(modDir + entry.getValue());
-			if (!oldFile.exists()) {
-				println("Downloading " + entry.getValue());
-				Util.downloadFile(entry.getKey(), modDir, entry.getValue());
-			} else {
-				try {
-					println("Copying " + entry.getValue());
-					FileUtils.copyFile(oldFile, newFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.err.println("Error During Copy Of " + fileInProgress);
-					println("Error During Copy Of " + fileInProgress);
-					System.exit(1);
-				}
-			}
-
-		}
-
-		for (Map.Entry<String, String> entry : modListClient.entrySet()) {
-			fileInProgress = entry.getValue();
-			File oldFile = new File(modDirOld + entry.getValue());
-			File newFile = new File(modDir + entry.getValue());
-			if (!oldFile.exists()) {
-				println("Downloading " + entry.getValue());
-				Util.downloadFile(entry.getKey(), modDir, entry.getValue());
-			} else {
-				try {
-					println("Copying " + entry.getValue());
-					FileUtils.copyFile(oldFile, newFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.err.println("Error During Copy Of " + fileInProgress);
-					println("Error During Copy Of " + fileInProgress);
-					System.exit(1);
-				}
-			}
-		}
-
-		// Download config
-		println("Downloading mod configs");
-		fileInProgress = "config.zip";
-
-		//PATCH
-
-		dbClient = new CouchDbClient(packListContoller.packDB.toString().replace("\"", "").replace("\\", ""), false, 
-				Configuration.getString("apiServerProtocol").toLowerCase(), Configuration.getString("apiServer"),
-				Integer.parseInt(Configuration.getString("apiServerPort")), null, null);
-
-		org.lightcouch.Document doc = dbClient.find(Document.class, "ForgeInstaller");
-
-		// get attachment
-
-		try {
-			InputStream in = dbClient.find("Configzip/Config.zip");
-			OutputStream out = new FileOutputStream(tmpDir + File.separator + "Config.zip");
-			IOUtils.copy(in,out);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		dbClient.shutdown();
-
-
-		Util.unZip(tmpDir + "config.zip", configDir);
-
-
-		//		println("Downloading and Installing New Audio");
-		//		println("Downloading and Installing New Audio");
-		//		try {
-		//			fileInProgress = "audio.csv";
-		//			InputStream CSV_audio = new URL(Configuration.getString("baseUrl") + "/csv/audio.csv").openStream();
-		//			CSVReader reader = new CSVReader(new InputStreamReader(CSV_audio));
-		//			String[] nextLine;
-		//			while ((nextLine = reader.readNext()) != null) {
-		//				if (!nextLine[0].startsWith("#")) {
-		//					println("Downloading " + nextLine[2]);
-		//					println("Downloading " + nextLine[2]);
-		//					fileInProgress = nextLine[2];
-		//					println(assetsDir + nextLine[1] + File.separator + nextLine[2]);
-		//					println(assetsDir + nextLine[1] + File.separator + nextLine[2]);
-		//					File currentaudio = new File(assetsDir + File.separator + nextLine[1] + File.separator + nextLine[2]);
-		//					if (!currentaudio.exists()) {
-		//						Util.downloadAudioFile(nextLine[0], assetsDir, nextLine[1], nextLine[2]);	
-		//					}
-		//				}
-		//			}
-		//			reader.close();
-		//			CSV_audio.close();
-		//		} catch (IOException e) {
-		//			e.printStackTrace();
-		//			System.err.println("Error During Download Of " + fileInProgress);
-		//			System.exit(1);
-		//		}
-
-		//Download server list if its non existant
-		File servList = new File(workDir.toString() + File.separator + "servers.dat");
-		if (!servList.exists()) {
-			//	Util.downloadFile(Configuration.getString("baseUrl") + "/servers.dat", workDir.toString() + File.seperator, "servers.dat");
-		}
-
-		Map<String,String> versionJSON = new HashMap<String, String>();
-		versionJSON.put("modpack_version", String.valueOf(packVersion));
-		versionJSON.put("forge_version", forgeVersion);
-
-
-		JSONObject versionjsonObject = (JSONObject) JSONSerializer.toJSON( versionJSON ); 
-		String versionjsonString = versionjsonObject.toString();
-		System.out.println(versionjsonString);
-		System.out.println(packVersion);
-		System.out.println(forgeVersion);
-
-
-		try {
-			Writer output = null;
-			File file = new File(workDir.toString() + File.separator + "version.json");
-			output = new BufferedWriter(new FileWriter(file));
-			output.write(versionjsonString);
-			output.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// feed in your array (or convert your data to an array)
-
-		//Finally remove the old mod dir
-		FileUtils.deleteQuietly(new File(modDirOld));
-
-		println("********************");
-		println("********************");
-		println("********************");
-		println("Mod Updater Complete");
-		println("********************");
-		println("********************");
-		println("********************");
-
-		doneUpdate = true;
-
-	}
-
-	private static void launchBootstrap(File workDir) {
-		if (!new File(workDir.toString() + File.separator + "Minecraft.jar").exists()) {
-			Util.downloadFile("https://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar", workDir.toString() + File.separator, "Minecraft.jar");
-		}
-
-		try {
-			ProcessBuilder pb = new ProcessBuilder("java", "-jar", "Minecraft.Jar");
-			Map<String, String> env = pb.environment();
-			pb.directory(workDir);
-			Process p = pb.start();
-			System.exit(0);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		System.exit(0);
-
-	}
+    public static final JButton btnLaunch = new JButton("Launch");
+    final static JFXPanel fxPanel = new JFXPanel();
+    private static final Font MONOSPACED = new Font("Monospaced", 0, 13);
+    //Development bools. Release with all true
+    private static final boolean enableJFX = true;
+    public static JTextField statusField;
+    public static boolean settingsOpen = false;
+    public static long packVersion;
+    public static boolean doneUpdate = false;
+    static Thread UpdateThread;
+    static JTextPane editorPane;
+    private static JFrame frame;
+    private static JScrollPane Log;
+    private static WebView webView;
+    private static JDialog settingsDialogHandle;
+    //Vars
+    private static boolean updateFound = false;
+    private static boolean updateChecked = false;
+    private static boolean updateCheckRunning = false;
+    private static String version = "1.0.0";
+    private static JButton btnSettings;
+    ;
+
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+
+        //Configuration Prep
+        Configuration.initProp();
+        UpdateThread = new Thread() {
+            @Override
+            public void run() {
+
+                //Check if update is done, or running.
+                if (updateChecked) {
+                    //Nothing to do
+                } else {
+                    if (updateCheckRunning) {
+                        while (updateCheckRunning) {
+                            try {
+                                Thread.sleep(200L);
+                            } catch (InterruptedException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    } else {
+                        //Need to fire off the update check
+                        UpdateCheckRunnerLogic();
+                    }
+                }
+
+                //Do Update if needed,
+                if (updateFound) doUpdate();
+
+                //Then run launchbootsrap
+                launchBootstrap();
+
+            }
+        };
+
+        //FIRE THE MAIN CANNONS!
+        //
+        //Err.. i mean initalize()
+
+        new File(OS_Util.getWorkingDirectory().getAbsolutePath() + File.separator + "tmp").mkdirs();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                initialize();
+            }
+        });
+    }
+
+    /**
+     * Create the application.
+     */
+
+    /**
+     * Initialize the contents of the frame.
+     */
+    private static void initialize() {
+
+        frame = new JFrame("HTB3 Launcher");
+        frame.addWindowFocusListener(new WindowFocusListener() {
+            public void windowGainedFocus(WindowEvent e) {
+                try {
+                    if (settingsOpen) {
+                        settingsDialogHandle.toFront();
+                    }
+
+                } catch (NullPointerException noWindow) {
+
+                }
+            }
+
+            public void windowLostFocus(WindowEvent e) {
+            }
+        });
+        frame.getContentPane().setBackground(UIManager.getColor("window"));
+        frame.setBounds(100, 100, 1280, 720);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().setLayout(new MigLayout("", "[grow]", "[400.00,grow,top][25px:25px:25px,grow,bottom]"));
+        frame.setVisible(true);
+
+
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBorder(null);
+        frame.getContentPane().add(tabbedPane, "cell 0 0,grow");
+        if (enableJFX) {
+            tabbedPane.addTab("News", null, fxPanel, null);
+            fxPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getX() < 9 && e.getY() < 9) {
+                        System.out.println("EASTER-EGG!");
+                        Platform.runLater(new Runnable() { // this will run initFX as JavaFX-Thread
+                            @Override
+                            public void run() {
+                                if (enableJFX) {
+                                    webView.getEngine().load("http://www.matmartinez.net/nsfw/");
+                                }
+                            }
+                        });
+
+                    }
+                }
+            });
+            fxPanel.addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
+                @Override
+                public void ancestorResized(HierarchyEvent e) {
+                    if (enableJFX) {
+                        try {
+                            webView.setMinSize(fxPanel.getWidth(), fxPanel.getHeight());
+                            webView.setMaxSize(fxPanel.getWidth(), fxPanel.getHeight());
+                        } catch (NullPointerException nu) {
+
+                        }
+                    }
+
+                }
+            });
+        }
+        editorPane = new JTextPane() {
+            private static final long serialVersionUID = 1L;
+        };
+        editorPane.setBackground(Color.DARK_GRAY);
+        editorPane.setBackground(new Color(70, 130, 180, 255));
+        editorPane.setForeground(new Color(0, 0, 0, 255));
+        editorPane.setEditable(false);
+        editorPane.setFont(MONOSPACED);
+
+        DefaultCaret caret = (DefaultCaret) editorPane.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        Log = new JScrollPane();
+        tabbedPane.addTab("Update Status", null, Log, null);
+
+        Log.setViewportView(editorPane);
+
+        JPanel panel = new JPanel();
+        panel.setBorder(null);
+        frame.getContentPane().add(panel, "flowx,cell 0 1,grow");
+        panel.setLayout(new BorderLayout(0, 0));
+
+        btnSettings = new JButton("Settings");
+        panel.add(btnSettings, BorderLayout.WEST);
+
+
+        panel.add(btnLaunch, BorderLayout.EAST);
+
+        statusField = new JTextField();
+        panel.add(statusField, BorderLayout.CENTER);
+        statusField.setBackground(UIManager.getColor("scrollbar"));
+        statusField.setEditable(false);
+        statusField.setColumns(120);
+        btnLaunch.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                println("Launch Pressed");
+                if (settingsOpen) {
+                    new settingsOpenMsg(frame).setVisible(true);
+                } else {
+                    UpdateThread.run();
+                }
+            }
+        });
+        btnLaunch.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (settingsOpen) {
+                    new settingsOpenMsg(frame).setVisible(true);
+                } else if (e.getButton() == MouseEvent.BUTTON3 || SwingUtilities.isRightMouseButton(e)) {
+                    btnLaunch.setText("Launching");
+                    //Ignore Update, Run launchbootsrap
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            launchBootstrap();
+                        }
+                    }.run();
+                }
+            }
+        });
+
+        btnSettings.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!settingsOpen) {
+                    settingsDialogHandle = new settingsDialog(frame);
+                    settingsDialogHandle.setVisible(true);
+                    settingsOpen = true;
+                    println("Settings Opened");
+                }
+            }
+        });
+
+        Platform.runLater(new Runnable() { // this will run initFX as JavaFX-Thread
+            @Override
+            public void run() {
+                if (enableJFX) {
+                    initFX(fxPanel, "http://blog.petercashel.net/");
+                }
+            }
+        });
+
+        println("HTB Launcher");
+        println("Version " + launcher.version);
+
+        new Thread() {
+            @Override
+            public void run() {
+                UpdateCheckRunnerLogic();
+            }
+        }.run();
+    }
+
+    private static void UpdateCheckRunnerLogic() {
+        updateCheckRunning = true;
+        if (Configuration.getString("InstallDir") != null && Configuration.getString("ServerVersionJSON") != null && Configuration.getString("InstallDir").length() > 4 && Configuration.getString("ServerVersionJSON").length() > 4) {
+            boolean result = doUpdateCheck(new File(Configuration.getString("InstallDir")));
+            if (result) {
+                println("Updates Available");
+                statusField.setText("Updates Available");
+                btnLaunch.setText("Update");
+            } else {
+                println("No Updates Available");
+                statusField.setText("No Updates Available");
+                btnLaunch.setText("Launch");
+            }
+            updateFound = result;
+        }
+        updateChecked = true;
+        updateCheckRunning = false;
+    }
+
+    /* Creates a WebView and fires up google.com */
+    private static void initFX(final JFXPanel fxPanel, String URL) {
+        if (enableJFX) {
+            Group group = new Group();
+            Scene scene = new Scene(group);
+            fxPanel.setScene(scene);
+
+            webView = new WebView();
+            group.getChildren().add(webView);
+            webView.autosize();
+            webView.setMinSize(fxPanel.getWidth(), fxPanel.getHeight());
+            webView.setMaxSize(fxPanel.getWidth(), fxPanel.getHeight());
+            final WebEngine webEngine = webView.getEngine();
+
+            webEngine.locationProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String oldLoc, String newLoc) {
+                    // check if the newLoc corresponds to a file you want to be downloadable
+                    // and if so trigger some code and dialogs to handle the download.
+
+                    //engine.spotscenered.info
+
+                    if (!newLoc.contains("adf.ly/go.php") && !newLoc.contains("/http://") && !newLoc.contains("/https://") && !newLoc.contains("www.mediafire.com/download/") && !newLoc.contains("engine.spotscenered.info")) {
+                        System.out.println(newLoc);
+
+                        String downloadableExtension = null;  // todo I wonder how to find out from WebView which documents it could not process so that I could trigger a save as for them?
+                        String[] downloadableExtensions = {".zip", ".jar", ".rar", ".7z"};
+                        for (String ext : downloadableExtensions) {
+                            if (newLoc.endsWith(ext)) {
+                                downloadableExtension = ext;
+                                break;
+                            }
+                        }
+                        if (downloadableExtension != null) {
+                            // create a file save option for performing a download.
+                            FileChooser chooser = new FileChooser();
+                            chooser.setTitle("Save " + newLoc);
+                            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Downloadable File", downloadableExtension));
+                            chooser.setInitialFileName(newLoc.substring(newLoc.lastIndexOf("/") + 1, newLoc.length()));
+                            chooser.setInitialDirectory(new File(OS_Util.getWorkingDirectory().getAbsolutePath() + File.separator + "tmp"));
+                            int filenameIdx = newLoc.lastIndexOf("/") + 1;
+                            if (filenameIdx != 0) {
+                                File saveFile = chooser.showSaveDialog(webView.getScene().getWindow());
+
+                                if (saveFile != null) {
+                                    statusBarHandler.setStatusBarText("Downloading " + saveFile.toString());
+                                    BufferedInputStream is = null;
+                                    BufferedOutputStream os = null;
+                                    try {
+                                        is = new BufferedInputStream(new URL(newLoc).openStream());
+                                        os = new BufferedOutputStream(new FileOutputStream(saveFile));
+                                        int b = is.read();
+                                        while (b != -1) {
+                                            os.write(b);
+                                            b = is.read();
+                                        }
+                                    } catch (FileNotFoundException e) {
+                                        System.out.println("Unable to save file: " + e);
+                                    } catch (MalformedURLException e) {
+                                        System.out.println("Unable to save file: " + e);
+                                    } catch (IOException e) {
+                                        System.out.println("Unable to save file: " + e);
+                                    } finally {
+                                        try {
+                                            if (is != null) is.close();
+                                        } catch (IOException e) { /** no action required. */}
+                                        try {
+                                            if (os != null) os.close();
+                                        } catch (IOException e) { /** no action required. */}
+                                        statusBarHandler.setStatusBarText("Download Complete! " + saveFile.toString());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            webEngine.load(URL);
+            webEngine.setJavaScriptEnabled(true);
+        }
+    }
+
+    public static void println(String string) {
+        String s = editorPane.getText();
+
+        editorPane.setText(s + string + "\n");
+        editorPane.setFont(MONOSPACED);
+    }
+
+    // Functions below here are for mod update threads
+
+    private static boolean doUpdateCheck(File workDir) {
+
+        println("Checking for modpack updates");
+        statusField.setText("Checking for modpack updates");
+        Boolean modpackNeedsUpdate = false;
+
+        if (new File(workDir.toString() + File.separator + "version.json").exists()) {
+
+            //Check if version of pack is up to date
+
+            @SuppressWarnings("unused")
+            String versionJSONFile;
+            FileInputStream inputStream;
+            try {
+                inputStream = new FileInputStream(workDir.toString() + File.separator + "version.json");
+                versionJSONFile = IOUtils.toString(inputStream);
+                inputStream.close();
+                JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(versionJSONFile);
+
+                packVersion = Long.valueOf(jsonObject.getString("version").toString().replace("\"", "").replace("\\", ""));
+
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+                modpackNeedsUpdate = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                modpackNeedsUpdate = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                modpackNeedsUpdate = true;
+            }
+
+            long webPackVersion = 0;
+
+            try {
+
+                Util.downloadFile(Configuration.getString("ServerVersionJSON"), workDir.toString() + File.separator , "versionWeb.json");
+                inputStream = new FileInputStream(workDir.toString() + File.separator + "versionWeb.json");
+                versionJSONFile = IOUtils.toString(inputStream);
+                inputStream.close();
+                JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(versionJSONFile);
+
+                File json = new File(workDir.toString() + File.separator + "versionWeb.json");
+                json.delete();
+                webPackVersion = Long.valueOf(jsonObject.getString("version").toString().replace("\"", "").replace("\\", ""));
+
+
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+                modpackNeedsUpdate = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                modpackNeedsUpdate = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                modpackNeedsUpdate = true;
+            }
+
+            if (webPackVersion > packVersion) {
+                modpackNeedsUpdate = true;
+                println("Has Version " + packVersion + ". Latest is " + webPackVersion);
+                packVersion = webPackVersion;
+            }
+
+
+        } else {
+            modpackNeedsUpdate = true;
+            //Versions are same
+        }
+        return modpackNeedsUpdate;
+    }
+
+    private static void doUpdate() {
+
+        println("********************");
+        println("********************");
+        println("********************");
+        println("Mod Updater Starting");
+        println("********************");
+        println("********************");
+        println("********************");
+
+        File installDir = new File(Configuration.getString("InstallDir"));
+        // Installer functions as it normally does, except it gets called via this method and not the loader
+
+        // This writes path.txt so the code in the installer can find the right directory
+        try {
+            // Might need to be changed to OS_Util.getWorkingDirectory() depending on what dir it works in.
+            FileUtils.writeStringToFile( new File((new File(".").getCanonicalPath()) + File.separator + "path.txt"), installDir.getCanonicalPath() + File.separator);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Download installer as library
+
+        File Installfile = null;
+        try {
+            Installfile = new File(installDir.getCanonicalPath() + File.separator + "htb3-installer.jar");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (!Installfile.exists()) {
+            try {
+                URL uRL;
+                uRL = new URL("http://jenkins.petercashel.net/job/HTB3%20Installer/5/artifact/build/libs/htb3-installer-v1.1.5.jar");
+                org.apache.commons.io.FileUtils.copyURLToFile(uRL, Installfile);
+            } catch (IOException e) {
+                // Auto-generated catch block
+                e.printStackTrace();
+                System.err.println("Error Downloading " + "htb3-installer.jar");
+            }
+        }
+
+        boolean added = false;
+        if (Installfile.exists()) {
+            //Prepare Installer
+            try {
+                launcher.classPathRunner(Installfile);
+                added = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        if (added) {
+            // Call HTB-Installer via its loader
+            String[] arg = new String[0];
+            try {
+                Class<?> clazz = Class.forName("net.petercashel.launch.Loader");
+                Method m = clazz.getMethod("main", String[].class);
+                m.invoke(null, (Object)arg);
+            } catch (ClassNotFoundException e) {
+                // Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("NO UPDATER");
+                System.out.println("Cannot Continue");
+                System.exit(1);
+            } catch (NoSuchMethodException e) {
+                // Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("Cannot Continue");
+                System.exit(1);
+            } catch (SecurityException e) {
+                //  Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("Cannot Continue");
+                System.exit(1);
+            } catch (IllegalAccessException e) {
+                //  Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("Cannot Continue");
+                System.exit(1);
+            } catch (IllegalArgumentException e) {
+                //  Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("Cannot Continue");
+                System.exit(1);
+            } catch (InvocationTargetException e) {
+                //  Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("Cannot Continue");
+                System.exit(1);
+            }
+        }
+
+        //TODO: write packVersion to JSON as version
+        JsonObject jobj = new JsonObject();
+        jobj.addProperty("version", String.valueOf(packVersion));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString;
+        jsonString = gson.toJson(jobj);
+
+        FileOutputStream fop = null;
+        File file;
+        String content = jsonString;
+
+        try {
+
+            file = new File(installDir, "version.json");
+            fop = new FileOutputStream(file);
+
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            // get the content in bytes
+            byte[] contentInBytes = content.getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+
+            System.out.println("Done");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fop != null) {
+                    fop.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        println("********************");
+        println("********************");
+        println("********************");
+        println("Mod Updater Complete");
+        println("********************");
+        println("********************");
+        println("********************");
+
+        doneUpdate = true;
+
+    }
+
+    private static void classPathRunner(File installfile) throws IOException {
+        ClassPathHacker.addFile(installfile);
+    }
+
+    private static void launchBootstrap() {
+        if (!new File(OS_Util.getWorkingDirectory().toString() + File.separator + "Minecraft.jar").exists()) {
+            Util.downloadFile("https://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar", OS_Util.getWorkingDirectory().toString() + File.separator, "Minecraft.jar");
+        }
+
+        try {
+            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "Minecraft.Jar");
+            Map<String, String> env = pb.environment();
+            pb.directory(OS_Util.getWorkingDirectory());
+            Process p = pb.start();
+            System.exit(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.exit(0);
+
+    }
 }
