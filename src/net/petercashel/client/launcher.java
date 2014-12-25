@@ -190,7 +190,7 @@ public class launcher {
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         Log = new JScrollPane();
-        tabbedPane.addTab("Update Status", null, Log, null);
+        tabbedPane.addTab("Console", null, Log, null);
 
         Log.setViewportView(editorPane);
 
@@ -216,7 +216,7 @@ public class launcher {
                 if (settingsOpen) {
                     new settingsOpenMsg(frame).setVisible(true);
                 } else {
-                    UpdateThread.run();
+                    UpdateThread.start();
                 }
             }
         });
@@ -233,7 +233,7 @@ public class launcher {
                         public void run() {
                             launchBootstrap();
                         }
-                    }.run();
+                    }.start();
                 }
             }
         });
@@ -261,12 +261,17 @@ public class launcher {
         println("HTB Launcher");
         println("Version " + launcher.version);
 
+        OutputStreamWrapper out = new OutputStreamWrapper();
+        PrintStream consoleTab = new PrintStream(out);
+        System.setOut (consoleTab);
+        System.setErr(consoleTab);
+
         new Thread() {
             @Override
             public void run() {
                 UpdateCheckRunnerLogic();
             }
-        }.run();
+        }.start();
     }
 
     private static void UpdateCheckRunnerLogic() {
@@ -372,8 +377,12 @@ public class launcher {
 
     public static void println(String string) {
         String s = editorPane.getText();
-
         editorPane.setText(s + string + "\n");
+        editorPane.setFont(MONOSPACED);
+    }
+    public static void print(String string) {
+        String s = editorPane.getText();
+        editorPane.setText(s + string);
         editorPane.setFont(MONOSPACED);
     }
 
@@ -446,7 +455,36 @@ public class launcher {
 
         } else {
             modpackNeedsUpdate = true;
-            //Versions are same
+            //Get Version
+
+            long webPackVersion = 0;
+
+            try {
+
+                String versionJSONFile;
+                FileInputStream inputStream;
+                Util.downloadFile(Configuration.getString("ServerVersionJSON"), workDir.toString() + File.separator , "versionWeb.json");
+                inputStream = new FileInputStream(workDir.toString() + File.separator + "versionWeb.json");
+                versionJSONFile = IOUtils.toString(inputStream);
+                inputStream.close();
+                JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(versionJSONFile);
+
+                File json = new File(workDir.toString() + File.separator + "versionWeb.json");
+                json.delete();
+                webPackVersion = Long.valueOf(jsonObject.getString("version").toString().replace("\"", "").replace("\\", ""));
+                packVersion = webPackVersion;
+
+
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+                modpackNeedsUpdate = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                modpackNeedsUpdate = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                modpackNeedsUpdate = true;
+            }
         }
         return modpackNeedsUpdate;
     }

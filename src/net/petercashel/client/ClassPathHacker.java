@@ -1,7 +1,5 @@
 package net.petercashel.client;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader;
-
 import java.beans.IntrospectionException;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,6 +35,12 @@ public class ClassPathHacker {
     public static void addFile(File f) throws IOException {
         System.out.println(f.getAbsolutePath());
         addURLToSystemClassLoader(f.toURI().toURL());
+        try {
+            addURLToJFXClassLoader(f.toURI().toURL());
+        } catch (IOException e) {
+            //Not expecting this to work in dev. therefore catch it.
+            e.printStackTrace();
+        }
     }//end method
 
 
@@ -51,6 +55,20 @@ public class ClassPathHacker {
         } catch (Throwable t) {
             t.printStackTrace();
             throw new IOException("Error, could not add URL to system classloader");
+        }
+    }
+
+    public static void addURLToJFXClassLoader(URL url) throws IOException {
+        URLClassLoader systemClassLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+        Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
+
+        try {
+            Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+            method.setAccessible(true);
+            method.invoke(systemClassLoader, new Object[]{url});
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new IOException("Error, could not add URL to JFX classloader");
         }
     }
 }
