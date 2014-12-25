@@ -521,7 +521,7 @@ public class launcher {
         if (!Installfile.exists()) {
             try {
                 URL uRL;
-                uRL = new URL("http://jenkins.petercashel.net/job/HTB3%20Installer/5/artifact/build/libs/htb3-installer-v1.1.5.jar");
+                uRL = new URL("http://jenkins.petercashel.net/job/HTB3%20Installer/lastSuccessfulBuild/artifact/build/libs/htb3-installer-v1.1.jar");
                 org.apache.commons.io.FileUtils.copyURLToFile(uRL, Installfile);
             } catch (IOException e) {
                 // Auto-generated catch block
