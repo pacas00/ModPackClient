@@ -1,0 +1,137 @@
+http://blog.petercashel.net/
+C:\HTB3\htb3-installer.jar
+Downloading:settings.json
+Sanitized:{     "ForgeVersion":"1.7.10-10.13.2.1272",   "McVer":"1.7.10"}
+{     "ForgeVersion":"1.7.10-10.13.2.1272",   "McVer":"1.7.10"}
+Method Name: <init> Desc:()V
+Method Name: run Desc:(Ljava/io/File;)Z
+ClientInstall Patching Complete! (1)
+Method Name: copyAndStrip Desc:(Ljava/io/File;Ljava/io/File;)V
+Method Name: readEntry Desc:(Ljava/util/zip/ZipFile;Ljava/util/zip/ZipEntry;)[B
+Method Name: readFully Desc:(Ljava/io/InputStream;)[B
+Method Name: isPathValid Desc:(Ljava/io/File;)Z
+Method Name: getFileError Desc:(Ljava/io/File;)Ljava/lang/String;
+Method Name: getSuccessMessage Desc:()Ljava/lang/String;
+Method Name: getSponsorMessage Desc:()Ljava/lang/String;
+Method Name: <init> Desc:()V
+Method Name: run Desc:(Ljava/io/File;)Z
+Method Name: copyAndStrip Desc:(Ljava/io/File;Ljava/io/File;)V
+Method Name: readEntry Desc:(Ljava/util/zip/ZipFile;Ljava/util/zip/ZipEntry;)[B
+Method Name: readFully Desc:(Ljava/io/InputStream;)[B
+Method Name: isPathValid Desc:(Ljava/io/File;)Z
+Method Name: getFileError Desc:(Ljava/io/File;)Ljava/lang/String;
+Method Name: getSuccessMessage Desc:()Ljava/lang/String;
+Inside target method!
+ClientInstall Patching Complete! (2)
+Method Name: getSponsorMessage Desc:()Ljava/lang/String;
+Method Name: <init> Desc:()V
+Method Name: main Desc:([Ljava/lang/String;)V
+Method Name: handleOptions Desc:(Ljoptsimple/OptionParser;Ljoptsimple/OptionSet;Ljoptsimple/OptionSpecBuilder;Ljoptsimple/OptionSpecBuilder;Ljoptsimple/OptionSpecBuilder;)V
+SimpleInstaller Patching Complete!
+Method Name: launchGui Desc:()V
+LOADED: Forge Installer
+LOADED: INSTALLERCORE
+LOADED: Config
+Def:UTF-8:C:\HTB3\
+Util:UTF-8:C:\HTB3\
+Def:UTF-8:C:\HTB3\
+Util:UTF-8:C:\HTB3\
+C:\HTB3\HTB3\installed
+Def:UTF-8:C:\HTB3\
+Util:UTF-8:C:\HTB3\
+HTB3 Installer: Updating Install
+C:\HTB3\HTB3
+HTB3 Installer: Updating Core Repo
+606ecd1a92acb48631a5c24ed55c3e872e65e062
+C:\HTB3\HTB3\mods
+HTB3 Installer: Updating Client Mods Repo
+859789194fae7edf3357ee6787c522466b9b51c7
+C:\HTB3\HTB3\mods\1.7.10
+HTB3 Installer: Updating Common Mods Repo
+78a1779f3ede19ec848e0b8906b445db8c500085
+Def:UTF-8:C:\HTB3\
+Util:UTF-8:C:\HTB3\
+HTB3 Installer: Installed!
+Considering library net.minecraftforge:forge:1.7.10-10.13.2.1272
+Considering library net.minecraft:launchwrapper:1.11
+Considering library org.ow2.asm:asm-all:5.0.3
+Considering library com.typesafe.akka:akka-actor_2.11:2.3.3
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\com\typesafe\akka\akka-actor_2.11\2.3.3\akka-actor_2.11-2.3.3.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library com.typesafe:config:1.2.1
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\com\typesafe\config\1.2.1\config-1.2.1.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-actors-migration_2.11:1.1.0
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-actors-migration_2.11\1.1.0\scala-actors-migration_2.11-1.1.0.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-compiler:2.11.1
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-compiler\2.11.1\scala-compiler-2.11.1.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\plugins\scala-continuations-library_2.11\1.0.2\scala-continuations-library_2.11-1.0.2.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\plugins\scala-continuations-plugin_2.11.1\1.0.2\scala-continuations-plugin_2.11.1-1.0.2.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-library:2.11.1
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-library\2.11.1\scala-library-2.11.1.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-parser-combinators_2.11:1.0.1
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-parser-combinators_2.11\1.0.1\scala-parser-combinators_2.11-1.0.1.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-reflect:2.11.1
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-reflect\2.11.1\scala-reflect-2.11.1.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-swing_2.11:1.0.1
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-swing_2.11\1.0.1\scala-swing_2.11-1.0.1.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library org.scala-lang:scala-xml_2.11:1.0.2
+Checking "C:\Users\Peter\AppData\Roaming\.minecraft\libraries\org\scala-lang\scala-xml_2.11\1.0.2\scala-xml_2.11-1.0.2.jar" internal checksums
+    checksums.sha1 validated successfully
+    Jar contents validated successfully
+Considering library net.sf.jopt-simple:jopt-simple:4.5
+Considering library lzma:lzma:0.0.1
+Considering library com.mojang:realms:1.3.5
+Considering library org.apache.commons:commons-compress:1.8.1
+Considering library org.apache.httpcomponents:httpclient:4.3.3
+Considering library commons-logging:commons-logging:1.1.3
+Considering library org.apache.httpcomponents:httpcore:4.3.2
+Considering library java3d:vecmath:1.3.1
+Considering library net.sf.trove4j:trove4j:3.0.3
+Considering library com.ibm.icu:icu4j-core-mojang:51.2
+Considering library com.paulscode:codecjorbis:20101023
+Considering library com.paulscode:codecwav:20101023
+Considering library com.paulscode:libraryjavasound:20101123
+Considering library com.paulscode:librarylwjglopenal:20100824
+Considering library com.paulscode:soundsystem:20120107
+Considering library io.netty:netty-all:4.0.10.Final
+Considering library com.google.guava:guava:16.0
+Considering library org.apache.commons:commons-lang3:3.2.1
+Considering library commons-io:commons-io:2.4
+Considering library commons-codec:commons-codec:1.9
+Considering library net.java.jinput:jinput:2.0.5
+Considering library net.java.jutils:jutils:1.0.0
+Considering library com.google.code.gson:gson:2.2.4
+Considering library com.mojang:authlib:1.5.16
+Considering library org.apache.logging.log4j:log4j-api:2.0-beta9
+Considering library org.apache.logging.log4j:log4j-core:2.0-beta9
+Considering library org.lwjgl.lwjgl:lwjgl:2.9.1
+Considering library org.lwjgl.lwjgl:lwjgl_util:2.9.1
+Considering library org.lwjgl.lwjgl:lwjgl-platform:2.9.1
+Considering library net.java.jinput:jinput-platform:2.0.5
+Considering library tv.twitch:twitch:5.16
+Considering library tv.twitch:twitch-platform:5.16
+Considering library tv.twitch:twitch-external-platform:4.5
+Def:UTF-8:C:\HTB3\
+Util:UTF-8:C:\HTB3\
+Done

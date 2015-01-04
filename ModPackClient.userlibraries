@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="Lib">
+    <archive path="D:/GitHub/ModPackClient/lib/commons-io-2.4.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-collections.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/httpclient-4.2.5.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/gson-2.2.4.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-lang3-3.1.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/httpclient-cache-4.2.5.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/ezmorph-1.0.3.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-lang.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-beanutils.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/httpcore-4.2.4.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/fluent-hc-4.2.5.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-codec-1.6.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/httpmime-4.2.5.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/miglayout15-swing.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/forms-1.3.0.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-logging-1.1.1.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/commons-cli-1.2.jar" />
+    <archive path="D:/GitHub/ModPackClient/lib/json-lib-2.2.3-MODIFIED-jdk15.jar" />
+  </library>
+</eclipse-userlibraries>
+
