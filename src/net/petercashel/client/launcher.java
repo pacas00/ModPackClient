@@ -50,6 +50,7 @@ public class launcher {
     private static JDialog settingsDialogHandle;
     //Vars
     private static boolean updateFound = false;
+    private static boolean UpdateForced = false;
     private static boolean updateChecked = false;
     private static boolean updateCheckRunning = false;
     private static String version = "1.0.0";
@@ -85,6 +86,7 @@ public class launcher {
                     }
                 }
 
+                if (UpdateForced) updateFound = true;
                 //Do Update if needed,
                 if (updateFound) doUpdate();
 
@@ -226,7 +228,8 @@ public class launcher {
                 if (settingsOpen) {
                     new settingsOpenMsg(frame).setVisible(true);
                 } else if (e.getButton() == MouseEvent.BUTTON3 || SwingUtilities.isRightMouseButton(e)) {
-                    btnLaunch.setText("Launching");
+                    if (updateFound) {
+                        btnLaunch.setText("Launching");
                     //Ignore Update, Run launchbootsrap
                     new Thread() {
                         @Override
@@ -234,6 +237,10 @@ public class launcher {
                             launchBootstrap();
                         }
                     }.start();
+                    } else {
+                        UpdateForced = true;
+                        UpdateThread.start();
+                    }
                 }
             }
         });
