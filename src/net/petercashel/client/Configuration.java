@@ -33,7 +33,7 @@ public class Configuration {
             }
             // TODO: Config Here
             if (!prop.containsKey("ServerVersionJSON")) {
-                prop.setProperty("ServerVersionJSON", "http://git.petercashel.net/htb3/launcherconfig/raw/master:version.json");
+                prop.setProperty("ServerVersionJSON", "http://gitlab.petercashel.net:8888/pacas00/launcherconfig/raw/master/version.json");
             }
             if (!prop.containsKey("InstallDir")) {
                 prop.setProperty("InstallDir", (new File(".")).getCanonicalPath() + File.separator);
