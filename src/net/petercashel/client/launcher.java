@@ -528,7 +528,7 @@ public class launcher {
         if (!Installfile.exists()) {
             try {
                 URL uRL;
-                uRL = new URL("http://jenkins.petercashel.net/job/HTB3%20Installer/lastSuccessfulBuild/artifact/build/libs/htb3-installer-v1.1.jar");
+                uRL = new URL(Configuration.getTxtRecord("launcher.petercashel.net"));
                 org.apache.commons.io.FileUtils.copyURLToFile(uRL, Installfile);
             } catch (IOException e) {
                 // Auto-generated catch block
@@ -539,7 +539,7 @@ public class launcher {
             Installfile.delete();
             try {
                 URL uRL;
-                uRL = new URL("http://jenkins.petercashel.net/job/HTB3%20Installer/lastSuccessfulBuild/artifact/build/libs/htb3-installer-v1.1.jar");
+                uRL = new URL(Configuration.getTxtRecord("launcher.petercashel.net"));
                 org.apache.commons.io.FileUtils.copyURLToFile(uRL, Installfile);
             } catch (IOException e) {
                 // Auto-generated catch block

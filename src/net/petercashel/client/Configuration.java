@@ -10,6 +10,35 @@ public class Configuration {
     public static SortedProperties prop;
     private static File cfgDir;
 
+    public static String getTxtRecord(String hostName) {
+	    // Get the first TXT record
+
+	    java.util.Hashtable<String, String> env = new java.util.Hashtable<String, String>();	
+	    env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+
+	    try {
+	        javax.naming.directory.DirContext dirContext 
+	            = new javax.naming.directory.InitialDirContext(env);	
+	        javax.naming.directory.Attributes attrs 
+	            = dirContext.getAttributes(hostName, new String[] { "TXT" });
+	        javax.naming.directory.Attribute attr 
+	            = attrs.get("TXT");
+
+	        String txtRecord = "";
+
+	        if(attr != null) {
+	            txtRecord = attr.get().toString();
+	        }
+
+	        return txtRecord;
+
+	    } catch (javax.naming.NamingException e) {
+
+	        e.printStackTrace();
+	        return "";
+	    }
+	}
+    
     public static void initProp() {
         prop = new SortedProperties();
         OS_Util.getWorkingDirectory().mkdirs();
