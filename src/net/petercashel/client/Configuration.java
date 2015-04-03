@@ -9,6 +9,7 @@ import java.util.*;
 public class Configuration {
     public static SortedProperties prop;
     private static File cfgDir;
+    public static int VersionOfLauncher = 0;
 
     public static String getTxtRecord(String hostName) {
 	    // Get the first TXT record

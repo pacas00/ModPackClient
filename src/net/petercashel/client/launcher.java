@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,13 +15,16 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import net.miginfocom.swing.MigLayout;
+import net.petercashel.update.updateLauncherSide;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -62,6 +66,20 @@ public class launcher {
      */
     public static void main(String[] args) {
 
+    	//Do Update Check!
+    	//
+    	boolean upd = false;
+		try {
+			upd = updateLauncherSide.run();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	if (!upd) System.out.println("No Update");
+    	File f = new File("updateLauncher.jar");
+    	if (f.exists()) f.delete();
+    	f = null;
+    	
         //Configuration Prep
         Configuration.initProp();
         UpdateThread = new Thread() {

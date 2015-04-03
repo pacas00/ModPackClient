@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class OS_Util {
 
-    private static OS getPlatform() {
+    public static OS getPlatform() {
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("win")) {
             return OS.windows;
@@ -86,7 +86,7 @@ public class OS_Util {
         return workingDirectory;
     }
 
-    private static enum OS {
+    public static enum OS {
         linux, solaris, windows, macos, unknown;
     }
 
