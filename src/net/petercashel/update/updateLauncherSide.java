@@ -77,7 +77,8 @@ public class updateLauncherSide {
 			File f = new File("updateLauncher.jar");
 			if (!f.exists()) return false;
 			// Right, Go.
-
+			System.out.println(f.getCanonicalPath());
+			System.out.println(OS_Util.getPlatform().ordinal());
 			switch (OS_Util.getPlatform().ordinal()) {
 			case 4: //Unknown
 			case 3: //Mac
@@ -87,15 +88,19 @@ public class updateLauncherSide {
 				ProcessBuilder linpb = new ProcessBuilder("java -jar updateLauncher.jar");
 				linpb = linpb.inheritIO();
 				Map<String, String> linenv = linpb.environment();
-				linpb.directory(new File("."));
+				linpb.directory(new File(".").getCanonicalFile());
 				Process linp = linpb.start();
 				System.exit(0);
 			}
 			case 2: { //Windows
-				ProcessBuilder pb = new ProcessBuilder("java -jar updateLauncher.jar");
+				File dir = new File(new File(".").getCanonicalFile().getPath());
+				//"cmd", "/c", "start /WAIT /D " + "\"" + getJarDir() + "\"" + " 
+				ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start /WAIT /D " + "\"" + dir + "\"" + " java -jar updateLauncher.jar");
 				pb = pb.inheritIO();
 				Map<String, String> env = pb.environment();
-				pb.directory(new File("."));
+				pb.directory(dir);
+				System.out.println(dir);
+				System.out.println(dir);
 				Process p = pb.start();
 				System.exit(0);
 			}
