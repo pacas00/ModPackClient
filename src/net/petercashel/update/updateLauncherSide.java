@@ -25,7 +25,7 @@ public class updateLauncherSide {
 		//Version of this app
 		int version = Configuration.VersionOfLauncher;
 		int updVersion = Integer.parseInt(updateCore.getTxtRecord("launcherversion.petercashel.net"));
-		if (updVersion > version) {
+		if (updVersion != version) {
 			update = true;
 			String url = updateCore.getTxtRecord("launcherjar.petercashel.net");
 			if (!(url.contains("http"))) url = "http://" + url;
