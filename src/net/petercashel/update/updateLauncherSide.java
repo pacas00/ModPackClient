@@ -85,7 +85,7 @@ public class updateLauncherSide {
 			case 1: //Solaris
 			case 0: //Linux
 			default: { 
-				ProcessBuilder linpb = new ProcessBuilder("java -jar updateLauncher.jar");
+				ProcessBuilder linpb = new ProcessBuilder("java -cp updateLauncher.jar net.petercashel.update.updateCore");
 				linpb = linpb.inheritIO();
 				Map<String, String> linenv = linpb.environment();
 				linpb.directory(new File(".").getCanonicalFile());
@@ -95,12 +95,10 @@ public class updateLauncherSide {
 			case 2: { //Windows
 				File dir = new File(new File(".").getCanonicalFile().getPath());
 				//"cmd", "/c", "start /WAIT /D " + "\"" + getJarDir() + "\"" + " 
-				ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start /WAIT /D " + "\"" + dir + "\"" + " java -jar updateLauncher.jar");
+				ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start /WAIT /D " + "\"" + dir + "\"" + " java -cp updateLauncher.jar  net.petercashel.update.updateCore");
 				pb = pb.inheritIO();
 				Map<String, String> env = pb.environment();
 				pb.directory(dir);
-				System.out.println(dir);
-				System.out.println(dir);
 				Process p = pb.start();
 				System.exit(0);
 			}

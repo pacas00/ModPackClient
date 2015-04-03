@@ -36,7 +36,7 @@ public class updateCore {
 		case 1: //Solaris
 		case 0: //Linux
 		default: { 
-			ProcessBuilder linpb = new ProcessBuilder("java -jar updateLauncher.jar");
+			ProcessBuilder linpb = new ProcessBuilder("java -jar ModPackClient.jar");
 			linpb = linpb.inheritIO();
 			Map<String, String> linenv = linpb.environment();
 			linpb.directory(new File("."));
@@ -44,10 +44,12 @@ public class updateCore {
 			System.exit(0);
 		}
 		case 2: { //Windows
-			ProcessBuilder pb = new ProcessBuilder("java -jar updateLauncher.jar");
+			File dir = new File(new File(".").getCanonicalFile().getPath());
+			//"cmd", "/c", "start /WAIT /D " + "\"" + getJarDir() + "\"" + " 
+			ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start /WAIT /D " + "\"" + dir + "\"" + " java -jar ModPackClient.jar");
 			pb = pb.inheritIO();
 			Map<String, String> env = pb.environment();
-			pb.directory(new File("."));
+			pb.directory(dir);
 			Process p = pb.start();
 			System.exit(0);
 		}
