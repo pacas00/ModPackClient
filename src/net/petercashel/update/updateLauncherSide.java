@@ -27,9 +27,11 @@ public class updateLauncherSide {
 		int updVersion = Integer.parseInt(updateCore.getTxtRecord("launcherversion.petercashel.net"));
 		if (updVersion > version) {
 			update = true;
+			String url = updateCore.getTxtRecord("launcherjar.petercashel.net");
+			if (!(url.contains("http"))) url = "http://" + url;
 			URL website = null;
 			try {
-				website = new URL(updateCore.getTxtRecord("launcherjar.petercashel.net"));
+				website = new URL(url);
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
