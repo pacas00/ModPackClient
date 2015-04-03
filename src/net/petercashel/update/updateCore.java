@@ -46,7 +46,7 @@ public class updateCore {
 		case 2: { //Windows
 			File dir = new File(new File(".").getCanonicalFile().getPath());
 			//"cmd", "/c", "start /WAIT /D " + "\"" + getJarDir() + "\"" + " 
-			ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start /WAIT /D " + "\"" + dir + "\"" + " java -jar ModPackClient.jar");
+			ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start /D " + "\"" + dir + "\"" + " java -jar ModPackClient.jar");
 			pb = pb.inheritIO();
 			Map<String, String> env = pb.environment();
 			pb.directory(dir);
